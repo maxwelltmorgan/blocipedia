@@ -19,10 +19,12 @@
         <li class="pull-right"><%= link_to "Login", new_user_session_path %><li>
         <% end %>
         <% if user_signed_in? %>
-        <li class="pull-right"><%= link_to('Logout', destroy_user_session_path, :method => :delete) %></li>
-        <% end %>
 
+        <li class="pull-right"><%= link_to('Logout', destroy_user_session_path, :method => :delete) %></li>
+        <li class="pull-right"><%= link_to(current_user.email, welcome_index_path) %></li>
+        <% end %>
       </ul>
+      <h1> Blocipedia: Social, Markdown Wikis </h1>
       <p class="notice"><%= notice %></p>
       <p class="alert"><%= alert %></p>
       <%= yield %>
