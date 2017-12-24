@@ -1,130 +1,121 @@
 require 'rails_helper'
 
 RSpec.describe WikisController, type: :controller do
+  let(:user) { User.create!(email: "user@example.com", password: "password") }
+  let(:wiki) { Wiki.create!(title: "New Wiki Title", body: "New Wiki Body", user: user) }
 
-let(:my_wiki) { Wiki.create!(title: RandomData.random_sentence, body: RandomData.random_paragraph) }
+  before do
+      sign_in(user)
+    end
 
   describe "GET #index" do
+
     it "returns http success" do
       get :index
       expect(response).to have_http_status(:success)
     end
-
-    it "assigns [my_wiki] to @wikis" do
-       get :index
-
-       expect(assigns(:wikis)).to eq([my_wiki])
-     end
   end
 
-  describe "GET show" do
-       it "returns http success" do
+  describe "GET #show" do
+    it "returns http success" do
+      get :show, params: { id: wiki.id }
+      expect(response).to have_http_status(:success)
+    end
 
-         get :show, params: { id: my_wiki.id }
-         expect(response).to have_http_status(:success)
-       end
-       it "renders the #show view" do
-
-         get :show, params: { id: my_wiki.id }
-         expect(response).to render_template :show
-       end
-
-       it "assigns my_wiki to @wiki" do
-         get :show, params: { id: my_wiki.id }
-
-         expect(assigns(:wiki)).to eq(my_wiki)
-       end
-     end
-
-  describe "GET new" do
-      it "returns http success" do
-        get :new
-        expect(response).to have_http_status(:success)
+    it "renders the #show view" do
+        get :show, params: { id: wiki.id }
+        expect(response).to render_template :show
       end
+  end
 
-      it "renders the #new view" do
-        get :new
+  describe "GET #new" do
+    it "returns http success" do
+      get :new
+      expect(response).to have_http_status(:success)
+    end
+
+    it "renders the #new view" do
+        get :new, params: { id: wiki.id }
         expect(response).to render_template :new
-      end
-
-      it "instantiates @wiki" do
-        get :new
-        expect(assigns(:wiki)).not_to be_nil
-      end
     end
 
-    describe "WIKI create" do
-      it "increases the number of Wiki by 1" do
-        expect{ wiki :create, params: { wiki: { title: RandomData.random_sentence, body: RandomData.random_paragraph } } }.to change(Wiki,:count).by(1)
-      end
+    it "instantiates @post" do
+      get :new, params: { id: wiki.id }
+      expect(assigns(:wiki)).not_to be_nil
+    end
+  end
 
-      it "assigns the new wiki to @wiki" do
-        wiki :create, params: { wiki: { title: RandomData.random_sentence, body: RandomData.random_paragraph } }
-        expect(assigns(:wiki)).to eq Wiki.last
-      end
-
-      it "redirects to the new wiki" do
-        wiki :create, params: { wiki: { title: RandomData.random_sentence, body: RandomData.random_paragraph } }
-        expect(response).to redirect_to Wiki.last
-      end
+  describe "POST create" do
+    it "increases the number of Wiki by 1" do
+      expect{ wiki }.to change(Wiki, :count).by(1)
     end
 
-    describe "GET edit" do
-         it "returns http success" do
-           get :edit, params: { id: my_wiki.id }
-           expect(response).to have_http_status(:success)
-         end
+    it "assigns the new wiki to @wiki" do
+      post :create, params: { id: wiki.id, wiki: {title: "New Wiki Title", body: "New Wiki Body"}}
+      expect(assigns(:wiki)).to eq Wiki.last
+    end
 
-         it "renders the #edit view" do
-           get :edit, params: { id: my_wiki.id }
-           expect(response).to render_template :edit
-         end
+    it "redirects to the new post" do
+      post :create, params: { id: wiki.id, wiki: {title: "New Wiki Title", body: "New Wiki Body"}}
+      expect(response).to redirect_to [Wiki.last]
+    end
+  end
 
-         it "assigns wiki to be updated to @wiki" do
-           get :edit, params: { id: my_wiki.id }
+  describe "GET #edit" do
+    it "returns http success" do
+      get :edit, params: { id: wiki.id }
+      expect(response).to have_http_status(:success)
+    end
 
-           wiki_instance = assigns(:wiki)
+    it "renders the #edit view" do
+        get :edit, params: { id: wiki.id }
+        expect(response).to render_template :edit
+    end
 
-           expect(wiki_instance.id).to eq my_wiki.id
-           expect(wiki_instance.title).to eq my_wiki.title
-           expect(wiki_instance.body).to eq my_wiki.body
-         end
-       end
+    it "assigns wiki to be updated to @wiki" do
+      get :edit, params: { id: wiki.id }
+      post_instance = assigns(:wiki)
 
-       describe "PUT update" do
-            it "updates wiki with expected attributes" do
-              new_title = RandomData.random_sentence
-              new_body = RandomData.random_paragraph
+      expect(post_instance.id).to eq wiki.id
+      expect(post_instance.title).to eq wiki.title
+      expect(post_instance.body).to eq wiki.body
+    end
+  end
 
-              put :update, params: { id: my_wiki.id, wiki: {title: new_title, body: new_body } }
+  describe "PUT update" do
+    it "updates wiki with expected attributes" do
+      new_title = "New Wiki Title"
+      new_body = "New Wiki Body"
 
-              updated_wiki = assigns(:wiki)
-              expect(updated_wiki.id).to eq my_wiki.id
-              expect(updated_wiki.title).to eq new_title
-              expect(updated_wiki.body).to eq new_body
-            end
+      put :update, params: { id: wiki.id, wiki: {title: new_title, body: new_body}}
 
-            it "redirects to the updated wiki" do
-              new_title = RandomData.random_sentence
-              new_body = RandomData.random_paragraph
+      updated_wiki = assigns(:wiki)
+      expect(updated_wiki.id).to eq wiki.id
+      expect(updated_wiki.title).to eq new_title
+      expect(updated_wiki.body).to eq new_body
+    end
 
-              put :update, params: { id: my_wiki.id, wiki: {title: new_title, body: new_body } }
-              expect(response).to redirect_to my_wiki
-            end
-          end
+    it "redirects to the updated wiki" do
+      new_title = "New Wiki Title"
+      new_body = "New Wiki Body"
 
-      describe "DELETE destroy" do
-               it "deletes the wiki" do
-                 delete :destroy, params: { id: my_wiki.id }
+      put :update, params: { id: wiki.id, wiki: {title: new_title, body: new_body}}
 
-                 count = Wiki.where({id: my_wiki.id}).size
-                 expect(count).to eq 0
-               end
+      expect(response).to redirect_to [wiki]
+    end
+  end
 
-               it "redirects to wikis index" do
-                 delete :destroy, params: { id: my_wiki.id }
-          
-                 expect(response).to redirect_to wikis_path
-               end
-             end
+  describe "DELETE destroy" do
+    it "deletes the wiki" do
+      delete :destroy, params: { id: wiki.id }
+      count = Wiki.where({id: wiki.id}).size
+      expect(count).to eq 0
+    end
+
+    it "redirects to wiki index" do
+      delete :destroy, params: { id: wiki.id }
+      expect(response).to redirect_to(wiki)
+    end
+  end
+
 end
