@@ -1,10 +1,14 @@
 Rails.application.routes.draw do
-  
+
   resources :charges, only: [:new, :create]
 
   resources :wikis
 
   devise_for :users
+
+  resources :users
+
+  match "users/:id/downgrade" => "users#downgrade", :as => "downgrade_user", via: [:get, :post]
 
   get 'welcome/index'
 
