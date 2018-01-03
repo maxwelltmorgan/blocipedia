@@ -28,6 +28,11 @@ class UsersController < ApplicationController
   end
 
   def downgrade
+
+    @wikis = current_user.wikis
+
+    @wikis.unscoped.update_all(private: 'false')
+
     current_user.update_attribute(:role, 'standard')
 
     flash[:notice] = "#{current_user.email} account has been downgraded"

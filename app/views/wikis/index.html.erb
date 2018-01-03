@@ -3,9 +3,19 @@
 <% @wikis.each do |wiki| %>
   <div class="media">
     <div class="media-body">
-      <h4 class="media-heading">
-        <%= link_to wiki.title, wiki_path(wiki.id) %>
-      </h4>
+      <% if current_user.premium? || current_user.admin? %>
+        <h4 class="media-heading">
+          <%= link_to wiki.title, wiki_path(wiki.id) %>
+        </h4>
+      <% elsif wiki.private == false %>
+        <h4 class="media-heading">
+          <%= link_to wiki.title, wiki_path(wiki.id) %>
+        </h4>
+      <% end %>
     </div>
   </div>
 <% end %>
+
+<div class="col-md-4">
+      <%= link_to "New Public Wiki", new_wiki_path, class: 'btn btn-success' %>
+</div>

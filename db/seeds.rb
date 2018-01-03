@@ -22,7 +22,8 @@ users = User.all
   wiki = Wiki.create!(
     user: users.sample,
     title: Faker::Seinfeld.character,
-    body: Faker::Seinfeld.quote
+    body: Faker::Seinfeld.quote,
+    private: false
   )
 end
 
