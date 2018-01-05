@@ -29,9 +29,9 @@ class UsersController < ApplicationController
 
   def downgrade
 
-    @wikis = current_user.wikis
-
-    @wikis.unscoped.update_all(private: 'false')
+    current_user.wikis.each do |wiki|
+      wiki.update_attribute(:private, false)
+    end
 
     current_user.update_attribute(:role, 'standard')
 
