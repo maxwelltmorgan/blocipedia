@@ -20,11 +20,12 @@ class UsersController < ApplicationController
     end
   end
 
-  def index
-    @users = User.all
-  end
+  #def index
+  #  @users = User.all
+#  end
 
   def show
+    @user = current_user
   end
 
   def downgrade

@@ -11,6 +11,7 @@ require 'faker'
  # Create Users
 10.times do
   User.create!(
+    name: Faker::FunnyName.name,
     email:  Faker::Internet.email,
     password:   'helloworld',
   )
@@ -31,6 +32,7 @@ wikis = Wiki.all
 
 # Create admin
 admin = User.create!(
+  name: 'adminUser',
   email: 'admin@example.com',
   password: 'password',
   role: 'admin'
@@ -38,6 +40,7 @@ admin = User.create!(
 
 # Create premium
 premium = User.create!(
+  name: 'premiumUser',
   email: 'premium@example.com',
   password: 'password',
   role: 'premium'

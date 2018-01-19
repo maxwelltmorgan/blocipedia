@@ -1,8 +1,7 @@
 class WikisController < ApplicationController
 
   def index
-    @user = User.find_by(id: session[:user_id])
-    @wikis = Wiki.all
+    @wikis = policy_scope(Wiki)
   end
 
   def show
@@ -11,12 +10,12 @@ class WikisController < ApplicationController
   end
 
   def new
-
+    @user = current_user
     @wiki = Wiki.new
   end
 
   def create
-     @wiki = Wiki.new
+     @wiki = Wiki.new(params[:id])
      @wiki.title = params[:wiki][:title]
      @wiki.body = params[:wiki][:body]
      @wiki.user = current_user
@@ -34,6 +33,7 @@ class WikisController < ApplicationController
   def edit
 
     @wiki = Wiki.find(params[:id])
+    @users = User.all
   end
 
   def update
@@ -56,7 +56,7 @@ class WikisController < ApplicationController
 
      if @wiki.destroy
        flash[:notice] = "\"#{@wiki.title}\" was deleted successfully."
-       redirect_to wikis_path
+       redirect_to @wiki
      else
        flash.now[:alert] = "There was an error deleting the wiki."
        render :show
